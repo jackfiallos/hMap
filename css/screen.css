@@ -1,0 +1,785 @@
+* {
+    margin: 0;
+    outline: 0 none;
+    padding: 0;
+}
+body {
+    color: #333333;
+    font-family: "Lucida Grande",Verdana,Arial;
+    font-size: 12px;
+    min-width: 980px;
+    overflow: hidden;
+}
+h2 {
+    padding: 0 0 0.5em;
+}
+a, a:visited {
+    color: #333333;
+}
+a:hover, a:active {
+    color: #77BB00;
+}
+p {
+    margin: 0 0 0.5em;
+}
+img {
+    border: 0 none;
+}
+ul {
+    margin-bottom: 0.5em;
+    margin-left: 2em;
+}
+header, article, nav, section, aside, footer, canvas {
+    display: block;
+}
+.mapnificent-city {
+    background: url("../img/mapnificent_medium.png") no-repeat scroll 0 0 transparent;
+    display: block;
+    font-size: 16pt;
+    height: 40px;
+    padding: 50px 0 0 85px;
+    text-decoration: none;
+    width: 180px;
+}
+#map {
+    height: 100%;
+    width: 100%;
+}
+#canvas {
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+.center {
+    margin: 0 auto;
+    text-align: center;
+}
+.indextopnav {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 2px solid #D5D5D5;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+    left: 120px;
+    padding: 10px 5px 0;
+    position: absolute;
+    top: -5px;
+    width: 600px;
+    z-index: 20;
+}
+.indextopnav h1 {
+    background: url("../img/mapnificent_medium.png") no-repeat scroll 0 0 #FFFFFF;
+    float: left;
+}
+.indextopnav h2 {
+    margin: 15px 0 0 220px;
+}
+.indextopnav h3 {
+    margin: 0 0 5px 220px;
+}
+.index-nav {
+    clear: both;
+}
+.index-nav ul {
+    height: 30px;
+    list-style: none outside none;
+    margin: 10px 0 0 220px;
+}
+.index-nav ul li {
+    float: left;
+    font-size: 10pt;
+    margin: 0 25px 0 0;
+}
+.shortoverlay {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 2px solid #D5D5D5;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+    left: 50%;
+    margin-left: -125px;
+    margin-top: -150px;
+    padding: 5px;
+    position: absolute;
+    text-align: center;
+    top: 40%;
+    width: 250px;
+    z-index: 25;
+}
+#topnav {
+    background: -moz-linear-gradient(center bottom , #E6E6E6 0pt, #FFFFFF 50%) repeat scroll 0 0 #FFFFFF;
+    display: block;
+    height: 60px;
+    left: 0;
+    min-width: 980px;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 20;
+}
+#topnav a {
+    text-decoration: none;
+}
+#about-header {
+    color: #444444;
+    font-size: 1.2em;
+    height: 60px;
+    text-align: center;
+    width: 150px;
+}
+.nav {
+    display: block;
+    margin: -65px 3px 0 150px;
+}
+#topnav-list {
+    list-style: none outside none;
+}
+#topnav-list li {
+    float: left;
+    margin: 0 4px;
+}
+.listicon {
+    cursor: pointer;
+    display: block;
+    font-size: 8pt;
+    height: 25px;
+    opacity: 0.6;
+    text-decoration: none;
+}
+.listicon:hover {
+    opacity: 1;
+}
+#mapnificent-world {
+    background: url("../img/world.png") no-repeat scroll 0 center transparent;
+    padding: 10px 0 10px 70px;
+    width: 5%;
+}
+#mapnificent-about {
+    background: url("../img/info.png") no-repeat scroll 0 center transparent;
+    padding: 10px 0 10px 40px;
+    width: 5%;
+}
+#mapnificent-settings {
+    background: url("../img/settings.png") no-repeat scroll 0 center transparent;
+    padding: 15px 0 10px 40px;
+    width: 5%;
+}
+.bigger-listitem {
+    border-left: 1px dashed #CCCCCC;
+    height: 40px;
+    margin: 5px 5px 5px 15px !important;
+    padding: 0 0 0 2%;
+}
+.nav-label {
+    color: #555555;
+    float: left;
+    font-size: 8pt;
+    padding: 5px 5px 0;
+    width: 70px;
+}
+.markerrepo {
+    background: url("http://gmaps-samples.googlecode.com/svn/trunk/markers/orange/blank.png") no-repeat scroll 5px 5px transparent;
+    border: 1px dashed #555555;
+    float: right;
+    height: 30px;
+    opacity: 0.7;
+    padding: 5px;
+    width: 20px;
+}
+.markerrepo-marker {
+    cursor: url("http://maps.gstatic.com/intl/en_us/mapfiles/openhand_8_8.cur"), default;
+    z-index: 900;
+}
+.left {
+    float: left;
+}
+#searcharea .right {
+    padding: 10px 0;
+}
+.right {
+    float: right;
+}
+#clear-search {
+    font-size: 7pt;
+    padding: 2px;
+}
+#map {
+    top: 60px;
+}
+#copyright-notice {
+    background: none repeat scroll 0 0 white;
+    border-radius: 5px 5px 5px 5px;
+    border-right: 2px solid #D5D5D5;
+    border-top: 2px solid #D5D5D5;
+    bottom: 40px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+    display: block;
+    font-size: 8pt;
+    left: -5px;
+    line-height: 1.4em;
+    max-height: 100px;
+    opacity: 0.5;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 5px 5px 5px 10px;
+    position: absolute;
+    width: 250px;
+    z-index: 20;
+}
+#copyright-notice:hover {
+    opacity: 1;
+}
+.contentoverlay {
+    background: none repeat scroll 0 0 white;
+    border: 2px solid #D5D5D5;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+    display: none;
+    left: 50%;
+    line-height: 1.4em;
+    margin-left: -242px;
+    margin-top: -250px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px 15px 20px;
+    position: absolute;
+    top: 55%;
+    width: 500px;
+    z-index: 999;
+}
+.contentoverlay:target {
+    display: block;
+}
+.controlsoverlay {
+    background: none repeat scroll 0 0 white;
+    border: 2px solid #D5D5D5;
+    border-radius: 5px 5px 5px 5px;
+    bottom: 400px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+    display: block;
+    line-height: 1.4em;
+    max-height: 400px;
+    opacity: 0.7;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 5px 0 10px 10px;
+    position: absolute;
+    right: 300px;
+    width: 500px;
+    z-index: 20;
+}
+.controlsoverlay:hover {
+    opacity: 1;
+}
+.red {
+    color: #BB0000;
+}
+.close {
+    float: right;
+    margin-right: 5px;
+    text-decoration: none !important;
+}
+.close:after {
+    content: "╳";
+    font-size: 1em;
+    padding: 0 5px;
+}
+.control {
+    border-bottom: 1px solid #DDDDDD;
+    margin: 5px 0 10px;
+    padding: 5px;
+}
+.activeLayer {
+    background: none repeat scroll 0 0 #F3F3F3;
+    border-bottom: 1px solid #F3F3F3;
+}
+.layer-title {
+    display: inline;
+}
+.layer-title label {
+    cursor: pointer;
+}
+.daytime {
+    clear: both;
+}
+.daytime input {
+    margin: 0 5px;
+}
+.daytime .ui-slider-horizontal {
+    cursor: pointer !important;
+    height: 1em !important;
+    margin: 0 20px;
+    width: 155px;
+}
+.daytime .ui-slider-handle {
+    cursor: move !important;
+    height: 1.1em !important;
+}
+.positions .ui-progressbar {
+    height: 1.5em !important;
+    width: 90%;
+}
+.positions .ui-progressbar-value:after {
+    content: "Calculating...";
+    padding: 10px 10px 10px 35%;
+}
+.positions .ui-slider-horizontal {
+    cursor: pointer !important;
+    height: 1.5em !important;
+    width: 90%;
+}
+.positions .ui-slider-handle {
+    cursor: move !important;
+    height: 1.6em !important;
+}
+.positions .ui-slider-horizontal:after {
+    color: #00BB0B;
+    content: "Slide me";
+    opacity: 0.5;
+    padding: 0 40%;
+}
+.positions .ui-slider-horizontal:hover:after {
+    opacity: 1;
+}
+.position-container {
+    border-bottom: 1px solid #BBBBBB;
+    margin: 5px 0;
+    padding: 5px;
+}
+.position-container:hover {
+    outline: 1px solid #00BB0B;
+}
+.remove-button {
+    color: #660000;
+    float: right;
+    margin: 2px 10px;
+}
+.dataloading {
+    height: 1em;
+    width: 90%;
+}
+.dataloading .ui-progressbar {
+    height: 1.5em !important;
+    width: 90%;
+}
+.dataloading .ui-progressbar-value:after {
+    content: "Loading...";
+    padding: 10px 10px 10px 35%;
+}
+.activate-control {
+    display: block;
+    float: left;
+    width: 25px;
+}
+#browsers {
+    background: none repeat scroll 0 0 white;
+    border: 2px solid #D5D5D5;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+    height: 300px;
+    left: 100px;
+    line-height: 1.4em;
+    overflow-y: auto;
+    padding: 10px 15px 20px;
+    position: absolute;
+    top: 100px;
+    width: 650px;
+    z-index: 999;
+}
+#browsers td {
+    font-size: 120%;
+    padding: 5px;
+    text-align: center;
+}
+address {
+    font-style: normal;
+}
+
+
+* {
+    margin: 0;
+    outline: 0 none;
+    padding: 0;
+}
+body {
+    color: #333333;
+    font-family: "Lucida Grande",Verdana,Arial;
+    font-size: 12px;
+    min-width: 980px;
+    overflow: hidden;
+}
+h2 {
+    padding: 0 0 0.5em;
+}
+a, a:visited {
+    color: #333333;
+}
+a:hover, a:active {
+    color: #77BB00;
+}
+p {
+    margin: 0 0 0.5em;
+}
+img {
+    border: 0 none;
+}
+ul {
+    margin-bottom: 0.5em;
+    margin-left: 2em;
+}
+header, article, nav, section, aside, footer, canvas {
+    display: block;
+}
+.mapnificent-city {
+    background: url("../img/mapnificent_medium.png") no-repeat scroll 0 0 transparent;
+    display: block;
+    font-size: 16pt;
+    height: 40px;
+    padding: 50px 0 0 85px;
+    text-decoration: none;
+    width: 180px;
+}
+#map {
+    height: 100%;
+    width: 100%;
+}
+#canvas {
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+.center {
+    margin: 0 auto;
+    text-align: center;
+}
+.indextopnav {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 2px solid #D5D5D5;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+    left: 120px;
+    padding: 10px 5px 0;
+    position: absolute;
+    top: -5px;
+    width: 600px;
+    z-index: 20;
+}
+.indextopnav h1 {
+    background: url("../img/mapnificent_medium.png") no-repeat scroll 0 0 #FFFFFF;
+    float: left;
+}
+.indextopnav h2 {
+    margin: 15px 0 0 220px;
+}
+.indextopnav h3 {
+    margin: 0 0 5px 220px;
+}
+.index-nav {
+    clear: both;
+}
+.index-nav ul {
+    height: 30px;
+    list-style: none outside none;
+    margin: 10px 0 0 220px;
+}
+.index-nav ul li {
+    float: left;
+    font-size: 10pt;
+    margin: 0 25px 0 0;
+}
+.shortoverlay {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 2px solid #D5D5D5;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+    left: 50%;
+    margin-left: -125px;
+    margin-top: -150px;
+    padding: 5px;
+    position: absolute;
+    text-align: center;
+    top: 40%;
+    width: 250px;
+    z-index: 25;
+}
+#topnav {
+    background: -moz-linear-gradient(center bottom , #E6E6E6 0pt, #FFFFFF 50%) repeat scroll 0 0 #FFFFFF;
+    display: block;
+    height: 60px;
+    left: 0;
+    min-width: 980px;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 20;
+}
+#topnav a {
+    text-decoration: none;
+}
+.nav {
+    display: block;
+    margin: -65px 3px 0 150px;
+}
+#topnav-list {
+    list-style: none outside none;
+}
+#topnav-list li {
+    float: left;
+    margin: 0 4px;
+}
+.listicon {
+    cursor: pointer;
+    display: block;
+    font-size: 8pt;
+    height: 25px;
+    opacity: 0.6;
+    text-decoration: none;
+}
+.listicon:hover {
+    opacity: 1;
+}
+#mapnificent-world {
+    background: url("../img/world.png") no-repeat scroll 0 center transparent;
+    padding: 10px 0 10px 70px;
+    width: 5%;
+}
+#mapnificent-about {
+    background: url("../img/info.png") no-repeat scroll 0 center transparent;
+    padding: 10px 0 10px 40px;
+    width: 5%;
+}
+#mapnificent-settings {
+    background: url("../img/settings.png") no-repeat scroll 0 center transparent;
+    padding: 15px 0 10px 40px;
+    width: 5%;
+}
+.bigger-listitem {
+    border-left: 1px dashed #CCCCCC;
+    height: 40px;
+    margin: 5px 5px 5px 15px !important;
+    padding: 0 0 0 2%;
+}
+.nav-label {
+    color: #555555;
+    float: left;
+    font-size: 8pt;
+    padding: 5px 5px 0;
+    width: 70px;
+}
+.markerrepo {
+    background: url("http://gmaps-samples.googlecode.com/svn/trunk/markers/orange/blank.png") no-repeat scroll 5px 5px transparent;
+    border: 1px dashed #555555;
+    float: right;
+    height: 30px;
+    opacity: 0.7;
+    padding: 5px;
+    width: 20px;
+}
+.markerrepo-marker {
+    cursor: url("http://maps.gstatic.com/intl/en_us/mapfiles/openhand_8_8.cur"), default;
+    z-index: 900;
+}
+.left {
+    float: left;
+}
+#searcharea .right {
+    padding: 10px 0;
+}
+.right {
+    float: right;
+}
+#clear-search {
+    font-size: 7pt;
+    padding: 2px;
+}
+#map {
+    top: 60px;
+}
+#copyright-notice {
+    background: none repeat scroll 0 0 white;
+    border-radius: 5px 5px 5px 5px;
+    border-right: 2px solid #D5D5D5;
+    border-top: 2px solid #D5D5D5;
+    bottom: 40px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+    display: block;
+    font-size: 8pt;
+    left: -5px;
+    line-height: 1.4em;
+    max-height: 100px;
+    opacity: 0.5;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 5px 5px 5px 10px;
+    position: absolute;
+    width: 250px;
+    z-index: 20;
+}
+#copyright-notice:hover {
+    opacity: 1;
+}
+.contentoverlay {
+    background: none repeat scroll 0 0 white;
+    border: 2px solid #D5D5D5;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+    display: none;
+    left: 50%;
+    line-height: 1.4em;
+    margin-left: -242px;
+    margin-top: -250px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px 15px 20px;
+    position: absolute;
+    top: 55%;
+    width: 500px;
+    z-index: 999;
+}
+.contentoverlay:target {
+    display: block;
+}
+.controlsoverlay {
+    background: none repeat scroll 0 0 white;
+    border: 2px solid #D5D5D5;
+    border-radius: 5px 5px 5px 5px;
+    bottom: 400px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+    display: block;
+    line-height: 1.4em;
+    max-height: 400px;
+    opacity: 0.7;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 5px 0 10px 10px;
+    position: absolute;
+    right: 300px;
+    width: 500px;
+    z-index: 20;
+}
+.controlsoverlay:hover {
+    opacity: 1;
+}
+.red {
+    color: #BB0000;
+}
+.close {
+    float: right;
+    margin-right: 5px;
+    text-decoration: none !important;
+}
+.close:after {
+    content: "╳";
+    font-size: 1em;
+    padding: 0 5px;
+}
+.control {
+    border-bottom: 1px solid #DDDDDD;
+    margin: 5px 0 10px;
+    padding: 5px;
+}
+.activeLayer {
+    background: none repeat scroll 0 0 #F3F3F3;
+    border-bottom: 1px solid #F3F3F3;
+}
+.layer-title {
+    display: inline;
+}
+.layer-title label {
+    cursor: pointer;
+}
+.daytime {
+    clear: both;
+}
+.daytime input {
+    margin: 0 5px;
+}
+.daytime .ui-slider-horizontal {
+    cursor: pointer !important;
+    height: 1em !important;
+    margin: 0 20px;
+    width: 155px;
+}
+.daytime .ui-slider-handle {
+    cursor: move !important;
+    height: 1.1em !important;
+}
+.positions .ui-progressbar {
+    height: 1.5em !important;
+    width: 90%;
+}
+.positions .ui-progressbar-value:after {
+    content: "Calculating...";
+    padding: 10px 10px 10px 35%;
+}
+.positions .ui-slider-horizontal {
+    cursor: pointer !important;
+    height: 1.5em !important;
+    width: 90%;
+}
+.positions .ui-slider-handle {
+    cursor: move !important;
+    height: 1.6em !important;
+}
+.positions .ui-slider-horizontal:after {
+    color: #00BB0B;
+    content: "Slide me";
+    opacity: 0.5;
+    padding: 0 40%;
+}
+.positions .ui-slider-horizontal:hover:after {
+    opacity: 1;
+}
+.position-container {
+    border-bottom: 1px solid #BBBBBB;
+    margin: 5px 0;
+    padding: 5px;
+}
+.position-container:hover {
+    outline: 1px solid #00BB0B;
+}
+.remove-button {
+    color: #660000;
+    float: right;
+    margin: 2px 10px;
+}
+.dataloading {
+    height: 1em;
+    width: 90%;
+}
+.dataloading .ui-progressbar {
+    height: 1.5em !important;
+    width: 90%;
+}
+.dataloading .ui-progressbar-value:after {
+    content: "Loading...";
+    padding: 10px 10px 10px 35%;
+}
+.activate-control {
+    display: block;
+    float: left;
+    width: 25px;
+}
+#browsers {
+    background: none repeat scroll 0 0 white;
+    border: 2px solid #D5D5D5;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+    height: 300px;
+    left: 100px;
+    line-height: 1.4em;
+    overflow-y: auto;
+    padding: 10px 15px 20px;
+    position: absolute;
+    top: 100px;
+    width: 650px;
+    z-index: 999;
+}
+#browsers td {
+    font-size: 120%;
+    padding: 5px;
+    text-align: center;
+}
+address {
+    font-style: normal;
+}
