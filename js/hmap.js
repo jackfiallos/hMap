@@ -99,7 +99,8 @@
   					}
 				});
 				
-				if (((fecha>=fechainicio)&&(fecha<=fechafinal))&&(tipodato==tipo))
+				if (( ((fecha>=fechainicio)||(fechainicio=='')) && ((fecha<=fechafinal) ||(fechafinal=='')) ) &&
+				    ((tipodato==tipo)||(tipo=='')))
 				{
 					arraydatos[numdatos]= new Array(latitud,longitud);	
 					numdatos = numdatos+1;
@@ -115,12 +116,13 @@
 			zoom = Math.pow(2, zoom) / Math.pow(2, 16);
 			canvas.fillStyle = "rgba(0, 0, 200, 0.8)";  
 
-			// var a = jQuery.googleHeatMaps.filtrardatos(opts.data,'23/11/2011','30/11/2011', '');
+
+			var a = jQuery.googleHeatMaps.filtrardatos(opts.data,'','30/11/2011','');
 			
-			a = new Array();
+			/* a = new Array();
 			a.push( new Array(19.40637, -99.16998));
 			a.push( new Array(19.40602, -99.17090));
-			a.push( new Array(19.40972, -99.16890));  
+			a.push( new Array(19.40972, -99.16890)); */  
 			
 			
 			for (var i = 0; i < a.length ; i++) { 
