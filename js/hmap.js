@@ -135,24 +135,26 @@
 				canvas.fillRect (x, y , 10, 10);
 			}*/
 			
-			jQuery.googleHeatMaps.pinta(a, canvas);
+			jQuery.googleHeatMaps.pinta(a, canvas, opts);
 			
 			
 		},
-		pinta: function (a, canvas) 
+		pinta: function (a, canvas, opts) 
 		{
-			var pantalla = [];
-			for (var x=0; x<550; x++) {
+			
+			var zoom = jQuery.googleHeatMaps.gMap.getZoom();
+			zoom = Math.pow(2, zoom) / Math.pow(2, 16);
+
+			var escala = 2;
+			
+			var pantalla = [];			
+			for (var x=0; x<opts.mapsWidth/escala; x++) {
 				pantalla[x] = new Array();
-				for (var y=0; y<450; y++) {
+				for (var y=0; y<opts.mapsHeight/escala; y++) {
 					pantalla[x][y] = 0;
 				}
 			}
 			
-			var zoom = jQuery.googleHeatMaps.gMap.getZoom();
-			zoom = Math.pow(2, zoom) / Math.pow(2, 16);
-			canvas.fillStyle = "rgba(250, 0, 0, 0.8)"; 
-			var fac = 47000.0 / (1.0/zoom);
 			
 			for (var i = 0; i < a.length ; i++) {
 				var latlng  = new GLatLng(a[i][0], a[i][1],true);
@@ -160,21 +162,73 @@
 				var y = cor.y;
 				var x = cor.x;
 				// canvas.fillRect (x, y , 10, 10);
-				pantalla[parseInt(x)][parseInt(y)] = 1.0;
+				pantalla[parseInt(x/escala)][parseInt(y/escala)] = 0.1;
 				
 			}
 			
+			pantalla = jQuery.googleHeatMaps.desvaneceN(40, pantalla, opts.mapsWidth/escala, opts.mapsHeight/escala);
 			
-			
-			for (var x=0; x<550; x++) {
-				for (var y=0; y<450; y++) {
+			for (var x=0; x<opts.mapsWidth/escala; x++) {
+				for (var y=0; y<opts.mapsHeight/escala; y++) {
 					var value = pantalla[x][y];
 					canvas.fillStyle = "rgba(250, 0, 0, " + value + ")"; 
-					canvas.fillRect (x, y , 20, 20);
+					canvas.fillRect (x*escala, y*escala , escala, escala);
 				}
 			}
 		},
 		
+		
+		desvaneceN: function (n, pantalla, ancho, alto) {
+			for (var i=0; i<n; i++) {
+				pantalla = jQuery.googleHeatMaps.desvanece(pantalla, ancho, alto);	
+			}
+			pantalla = jQuery.googleHeatMaps.normaliza(pantalla, ancho, alto);	
+			
+			return pantalla;
+		},
+		
+		desvanece: function (pantalla, ancho, alto) {
+			pantalla2 = [];
+			for (var x=0; x<ancho; x++){
+				pantalla2[x] = new Array();
+				for (var y=0; y<alto; y++){
+					if (x == 0 || x == ancho-1) {
+						pantalla2[x][y] = 0;
+					} else if (y == 0 || y == alto-1)  {
+						pantalla2[x][y] = 0;
+					} else {
+						
+						pantalla2[x][y] = ( pantalla[x-0][y+1] + 
+											pantalla[x-0][y-0] +
+											pantalla[x-0][y-1] +
+											pantalla[x-1][y+1] +
+											pantalla[x-1][y-0] +
+											pantalla[x-1][y-1] +
+											pantalla[x+1][y+1] +
+											pantalla[x+1][y-0] +
+											pantalla[x+1][y-1] );
+					}
+				}
+			}	
+			return pantalla2;
+		},
+		normaliza: function(pantalla, ancho, alto) {
+			var max = 0;
+			var min = 1.0;
+			for (var x=1; x<ancho-1; x++){
+				for (var y=1; y<alto-1; y++){
+					max = Math.max(max, pantalla[x][y]);
+					min = Math.min(min, pantalla[x][y]);
+				}
+			}
+			
+			for (var x=1; x<ancho-1; x++){
+				for (y=1; y<alto-1; y++){
+					pantalla[x][y] = ((pantalla[x][y]-min) / (max-min)) * 1.0;
+				}
+			}
+			return pantalla;
+		},
 		clean: function (canvas) 
 		{
 			canvas.setTransform(1, 0, 0, 1, 0, 0);
