@@ -21,8 +21,8 @@ jQuery(function($) {
 	$('#map_canvas').googleHeatMaps({
     	latitud: 19.40602,
         longitud: -99.16720,
-        mapsWidth: 550,
-        mapsHeight: 450,
+        mapsWidth: jQuery("#map_canvas").width(),
+		mapsHeight: jQuery("#map_canvas").height(),
         //geoLocalizacion: 'Mexico City',
         factorZoom: 16,
         data: [
