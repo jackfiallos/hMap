@@ -48,11 +48,11 @@
 			// Controles de manejo
 			$.googleHeatMaps.gMap.setUIToDefault();
 			// Manipulando los datos
-			$.each(opts.data, function(key, val) {
+			/*$.each(opts.data, function(key, val) {
 				$.each(val, function(k, v) {
 					alert(v);
 				});
-			});
+			});*/
 		},
 		obtenerCoords: function(latitud, longitud) {
 			return new GLatLng(latitud, longitud);
