@@ -1,9 +1,12 @@
 (function(jQuery){
-	
+	var ele;
 	jQuery.fn.googleHeatMaps = function(options) {
 		if (!window.GBrowserIsCompatible || !GBrowserIsCompatible()) {
 		   return this;
 		}
+		
+		ele = jQuery(this);
+		
 		// Utilizar defaults si no se establecen opciones
 		var options = jQuery.extend({}, jQuery.googleHeatMaps.defaults, options);		
 		// Crear el mapa
@@ -35,7 +38,7 @@
 				geolocalizaDireccion = new GClientGeocoder();
 				geolocalizaDireccion.getLatLng(opts.geoLocalizacion, function(center) {
 					if (center) {
-						jQuery.googleHeatMaps.gMap.setC.enter(center, 16/*opts.factorZoom*/);
+						jQuery.googleHeatMaps.gMap.setCenter(center, 16/*opts.factorZoom*/);
 						jQuery.googleHeatMaps.latitud = center.x;
 						jQuery.googleHeatMaps.longitud = center.y;
 					}
@@ -74,8 +77,39 @@
 			// Controles de manejo
 			jQuery.googleHeatMaps.gMap.setUIToDefault();
 			
+			var timeline = jQuery('<div />');
+			timeline.attr('id', 'timeline');/*.css({
+				'bottom':'40px',
+				'right':'10px'
+			});*/
+			var startDate = jQuery('<input />');
+			startDate.attr({
+				id:'startDate',
+				type:'text'
+			});
+			var endDate = jQuery('<input />');
+			endDate.attr({
+				id:'endDate',
+				type:'text'
+			}).after('<br />');
+			var btnAccept = jQuery('<button />');
+			btnAccept.attr('id','btnaccept').text('Filtrar');
+			var eslider = jQuery('<div />');
+			eslider.attr('id','slider').after('<br />');
+			var dateFiltered = jQuery('<div />');
+			dateFiltered.attr('id','dateFiltered').text('Inicio');
+			var lblfi = $('<div />');
+			lblfi.css('width','80px').append('Fecha Inicial');
+			var lblff = $('<div />');
+			lblff.css('width','80px').append('Fecha Final');
+			timeline.append(lblfi).append(startDate).append('<br />').append(lblff).append(endDate).append('<br />').append(btnAccept).append('<br /><br />').append(eslider).append('<br />').append(dateFiltered);
+			ele.after(timeline);
 			
+			TimeLineFilters.onFilterAccept = function (startDate, endDate) {};
+		    TimeLineFilters.onSliderFilter = function (startDate, endDate) {};
 			
+			// Generando el slider para mover el canvas
+			jQuery.googleHeatMaps.TimeLine(startDate,endDate,"#slider",btnAccept,"#dateFiltered",new Date(), new Date());
 		},
 		obtenerCoords: function(latitud, longitud) {
 			return new GLatLng(latitud, longitud);
@@ -125,7 +159,7 @@
 			a.push( new Array(19.40972, -99.16890)); */  
 			
 			
-			/* for (var i = 0; i < a.length ; i++) { 
+			/*for (var i = 0; i < a.length ; i++) { 
 								
 				canvas.fillStyle = "rgba(0, 200, 0, 0.8)";
 				var latlng  = new GLatLng(a[i][0], a[i][1],true);
@@ -162,7 +196,11 @@
 				var y = cor.y;
 				var x = cor.x;
 				// canvas.fillRect (x, y , 10, 10);
-				pantalla[parseInt(x/escala)][parseInt(y/escala)] = 0.1;
+				if (x/escala > 0 && x/escala < opts.mapsWidth) {
+					if (y/escala > 0 && y/escala < opts.mapsHeight) {
+						pantalla[parseInt(x/escala)][parseInt(y/escala)] = 0.1;
+					}
+				}
 				
 			}
 			
@@ -235,6 +273,78 @@
 			canvas.clearRect(0, 0, 
 				jQuery("#carcanvas").width(), jQuery("#carcanvas").height()	
 			);
-		}		
+		},
+		TimeLine: function (startDateName, endDateName, sliderName, buttonName, dateFilteredName, startDate, endDate ) 
+	    {           
+	        TimeLineFilters.slider = sliderName;
+	        TimeLineFilters.startDate = startDate;
+	        TimeLineFilters.startDate = endDate;
+	        TimeLineFilters.dateFilteredName = dateFilteredName;	        
+	        startDateName.attr("value", TimeLineFilters.twoChar(startDate.getDate()) + "/" + TimeLineFilters.twoChar(startDate.getMonth()) + "/" + startDate.getFullYear());
+	        endDateName.attr("value", TimeLineFilters.twoChar(endDate.getDate()) + "/" + TimeLineFilters.twoChar(endDate.getMonth()) + "/" + endDate.getFullYear());
+	        
+	        jQuery(function(){
+	            buttonName.click(function(){TimeLineFilters.onFilter();});
+	            startDateName.datepicker({
+	            	dateFormat: 'dd/mm/yy',
+	                onSelect: function(dateText) {TimeLineFilters.onStartDateChange(dateText);}
+	            });
+	            endDateName.datepicker({
+	            	dateFormat: 'dd/mm/yy',
+	                onSelect: function(dateText) {TimeLineFilters.onEndDateChange(dateText);}
+	            });
+	            jQuery(sliderName).slider({
+	            	min: 1,
+	                max: ((TimeLineFilters.startDate - TimeLineFilters.startDate)/1000/24/60/60+1 ),
+	                change: function(event, ui) {TimeLineFilters.onSliderChange(ui.value);},
+	                slide: function(event, ui) {TimeLineFilters.onSliderSlide(ui.value);}
+	            });
+	        });
+	    }		
 	}
 })(jQuery); 
+
+
+TimeLineFilters =
+{
+    startDate : new Date(),
+    endDate : new Date(),
+    slider : "",
+    dateFilteredName : "",
+    twoChar : function(value) {
+    	if( value.toString().length == 1 ){
+    		return "0" + value;
+    	}
+    	return value;
+    },
+    onStartDateChange : function(value){
+        this.startDate = new Date(value.substr(6), value.substr(3,2)-1, value.substr(0,2), 0, 0, 0, 0);
+    },
+    onEndDateChange: function(value){
+        this.endDate = new Date(value.substr(6), value.substr(3,2)-1, value.substr(0,2), 0, 0, 0, 0);
+    },
+    onSliderChange : function(value){
+        var newEndDate = new Date();
+        newEndDate.setDate(this.startDate.getDate() + value - 1);
+        this.onSliderFilter(this.startDate,newEndDate);
+    },
+    onFilter : function(){
+        if(this.startDate > this.endDate){
+            alert("La fecha inicial no debe de ser mayor a la fecha final");
+            return;
+        }
+        jQuery(this.slider).slider({max:  ( (this.endDate - this.startDate)/1000/24/60/60+1 )});
+        this.onFilterAccept(this.startDate, this.endDate);
+    },
+    onSliderFilter : function(startDate, endDate){
+        //
+    },
+    onFilterAccept : function(startDate, endDate){
+        //
+    },
+    onSliderSlide : function(value){
+        var newEndDate = new Date();
+        newEndDate.setDate(this.startDate.getDate() + value - 1);
+        jQuery(this.dateFilteredName).text(this.twoChar(newEndDate.getDate()) + "/" + this.twoChar(newEndDate.getMonth()) + "/" + newEndDate.getFullYear());
+    }
+}
