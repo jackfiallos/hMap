@@ -1,6 +1,6 @@
 (function($){
 
-    
+
 	
 	jQuery.fn.googleHeatMaps = function(options) {
 		if (!window.GBrowserIsCompatible || !GBrowserIsCompatible())  {
@@ -118,7 +118,6 @@
 			
 			var fac = 47000.0 / (1.0/zoom);
 
-	                // (19.406145,-99.169807)
 			canvas.fillRect (275 + (-x*fac), 225 + (y*fac) , 10, 10);
 			
 		},
