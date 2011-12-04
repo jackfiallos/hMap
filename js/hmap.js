@@ -42,7 +42,7 @@
 				geolocalizaDireccion = new GClientGeocoder();
 				geolocalizaDireccion.getLatLng(opts.geoLocalizacion, function(center) {
 					if (center) {
-						jQuery.googleHeatMaps.gMap.setCenter(center, 16/*opts.factorZoom*/);
+						jQuery.googleHeatMaps.gMap.setCenter(center, opts.factorZoom);
 						jQuery.googleHeatMaps.latitud = center.x;
 						jQuery.googleHeatMaps.longitud = center.y;
 					}
@@ -52,7 +52,7 @@
 				// Coordenadas de Geolocalizacion
 
 				var center 	= jQuery.googleHeatMaps.obtenerCoords(opts.latitud, opts.longitud);
-				jQuery.googleHeatMaps.gMap.setCenter(center, 16/*opts.factorZoom*/);
+				jQuery.googleHeatMaps.gMap.setCenter(center, opts.factorZoom);
 				jQuery.googleHeatMaps.latitud = center.x;
 				jQuery.googleHeatMaps.longitud = center.y;
 
@@ -109,8 +109,8 @@
 			timeline.append(lblfi).append(startDate).append('<br />').append(lblff).append(endDate).append('<br />').append(btnAccept).append('<br /><br />').append(eslider).append('<br />').append(dateFiltered);
 			ele.after(timeline);
 			
-			TimeLineFilters.onFilterAccept = function (startDate, endDate) {jQuery.googleHeatMaps.filtrardatos(startDate,startDate);};
-		    TimeLineFilters.onSliderFilter = function (startDate, endDate) {jQuery.googleHeatMaps.filtrardatos(startDate,endDate);};
+			TimeLineFilters.onFilterAccept = function (startDate, endDate) {return jQuery.googleHeatMaps.filtrardatos(startDate,startDate);};
+		    TimeLineFilters.onSliderFilter = function (startDate, endDate) {return jQuery.googleHeatMaps.filtrardatos(startDate,endDate);};
 			
 			// Generando el slider para mover el canvas
 			jQuery.googleHeatMaps.TimeLine(startDate,endDate,"#slider",btnAccept,"#dateFiltered",new Date(), new Date());
@@ -122,15 +122,16 @@
 		filtrardatos: function(fechainicio, fechafinal) {
 		    arraydatos = new Array();
 		    numdatos =0;
-		 	$.each(this.data, function(key, val) {
-				$.each(val, function(k, v) {				    
-				    if (k=='fecha'){
-				      fecha=v;
+		    cont=0;
+		 	$.each(this.data.reports, function(key, val) {
+		 		$.each(val, function(k, v) {
+		 			if (k=='created_at'){
+		 			  fecha=new Date( v.substr(0,4),  v.substr(5,2)-1,  v.substr(8,2), 0, 0, 0, 0);;
 				    }
-				    if (k=='lat'){
+				    if (k=='latitude'){
 				      latitud=v;
 				    }
-				    if (k=='lon'){
+				    if (k=='longitude'){
 				      longitud=v;
 				    }
 					if (k=='tipo'){
@@ -143,8 +144,13 @@
 					arraydatos[numdatos]= new Array(latitud,longitud);	
 					numdatos = numdatos+1;
 				}
+				
+				cont++;
 			});
+			
+			//alert( "Numero total de registros:" + numdatos );
 			jQuery.googleHeatMaps.redibujar(arraydatos);
+			return numdatos;
 		},
 		redibujar: function (data) {
 			
@@ -167,7 +173,7 @@
 			var zoom = jQuery.googleHeatMaps.gMap.getZoom();
 			zoom = Math.pow(2, zoom) / Math.pow(2, 16);
 
-			var escala = 2;
+			var escala = 4;
 			
 			var pantalla = [];			
 			for (var x=0; x<this.mapsWidth/escala; x++) {
@@ -183,8 +189,8 @@
 				var y = cor.y;
 				var x = cor.x;
 				// canvas.fillRect (x, y , 10, 10);
-				if (x/escala > 0 && x/escala < this.mapsWidth) {
-					if (y/escala > 0 && y/escala < this.mapsHeight) {
+				if (x/escala > 0 && x/escala < this.mapsWidth/escala) {
+					if (y/escala > 0 && y/escala < this.mapsHeight/escala) {
 						pantalla[parseInt(x/escala)][parseInt(y/escala)] = 0.1;
 					}
 				}
@@ -296,6 +302,7 @@ TimeLineFilters =
 {
     startDate : new Date(),
     endDate : new Date(),
+    sliderEndDate : new Date(),
     slider : "",
     dateFilteredName : "",
     twoChar : function(value) {
@@ -304,6 +311,14 @@ TimeLineFilters =
     	}
     	return value;
     },
+    addDay : function(dateToModified,days) {
+    	var aux1 = new Date(2011,01,01);
+    	var aux2 = new Date(2011,01,02);
+    	var diff = aux2.getTime() - aux1.getTime();
+    	var newDate = new Date();
+    	newDate.setTime(dateToModified.getTime() + (days*diff));
+    	return newDate;
+    },
     onStartDateChange : function(value){
         this.startDate = new Date(value.substr(6), value.substr(3,2)-1, value.substr(0,2), 0, 0, 0, 0);        
     },
@@ -311,9 +326,9 @@ TimeLineFilters =
         this.endDate = new Date(value.substr(6), value.substr(3,2)-1, value.substr(0,2), 0, 0, 0, 0);
     },
     onSliderChange : function(value){
-        var newEndDate = new Date();
-        newEndDate.setDate(this.startDate.getDate() + value - 1);
-        this.onSliderFilter(this.startDate,newEndDate);
+        this.sliderEndDate = this.addDay(this.startDate, value); 
+        var numOfReg = this.onSliderFilter(this.startDate,this.sliderEndDate);
+        this.paintInformation(numOfReg);
     },
     onFilter : function(){    	
         if(this.startDate > this.endDate){
@@ -321,7 +336,8 @@ TimeLineFilters =
             return;
         }
         jQuery(this.slider).slider({max:  ( (this.endDate - this.startDate)/1000/24/60/60+1 )});
-        this.onFilterAccept(this.startDate, this.startDate);
+        var numOfReg = this.onFilterAccept(this.startDate, this.startDate);
+        this.paintInformation(numOfReg);
     },
     onSliderFilter : function(startDate, endDate){
         //
@@ -330,9 +346,11 @@ TimeLineFilters =
         //
     },
     onSliderSlide : function(value){
-        var newEndDate = new Date();
-        newEndDate.setDate(this.startDate.getDate() + value - 1);
-        jQuery(this.dateFilteredName).text(this.twoChar(newEndDate.getDate()) + "/" + this.twoChar(newEndDate.getMonth()) + "/" + newEndDate.getFullYear());
+        var newEndDate = this.addDay(this.startDate, value);
+        jQuery(this.dateFilteredName).text(this.twoChar(newEndDate.getDate()) + "/" + this.twoChar(newEndDate.getMonth()+1) + "/" + newEndDate.getFullYear());
+    },
+    paintInformation : function(numberOfReg) {
+    	jQuery(this.dateFilteredName).text(this.twoChar(this.sliderEndDate.getDate()) + "/" + this.twoChar(this.sliderEndDate.getMonth()+1) + "/" + this.sliderEndDate.getFullYear() + "\tReg " + numberOfReg);
     }
 }
 

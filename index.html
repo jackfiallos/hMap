@@ -67,35 +67,21 @@
 	<script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
 </head>
 <body>
-<div id="map_canvas" style="width: 550px; height: 450px;"></div>
+<div id="map_canvas" style="width: 1200px; height: 900px;"></div>
 <script type="text/javascript"> 
 /*<![CDATA[*/
 jQuery(function($) {
-	$('#map_canvas').googleHeatMaps({
-    	latitud: 19.40402,
-        longitud: -99.16720,
-        //geoLocalizacion: 'Mexico City',
-        factorZoom: 16,
-        mapsWidth: jQuery("#map_canvas").width(),
-        mapsHeight: jQuery("#map_canvas").height(),
-        data: [
-			{
-				'lat'  : 19.40637,
-            	'lon'  : -99.16998,
-            	'desc' : 'descripcion #a',
-            	'fecha': new Date(2011,11,4, 0, 0, 0, 0),
-            	'tipo' : 'tipo #a'
-            },
-            {
-				'lat'  : 19.40602,
-            	'lon'  : -99.17090,
-            	'desc' : 'descripcion #b',
-            	'fecha': new Date(2011,11,9, 0, 0, 0, 0),
-            	'tipo' : 'tipo #b'
-            },
-		]
-    });
-});
+	$.getJSON("http://api.citivox.com/dasshu/nl/reports.json?callback=?", function(jSonData) {
+            $('#map_canvas').googleHeatMaps({
+                latitud: 25.7225249818707,
+                longitud: -100.20591008545836,
+                factorZoom: 12,
+                mapsWidth: jQuery("#map_canvas").width(),
+                mapsHeight: jQuery("#map_canvas").height(),
+                data: jSonData
+                });
+            });
+        });
 /*]]>*/
 </script> 
 </body>
