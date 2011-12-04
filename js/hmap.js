@@ -1,4 +1,5 @@
 (function(jQuery){
+
 	jQuery.fn.googleHeatMaps = function(options) {
 		if (!window.GBrowserIsCompatible || !GBrowserIsCompatible()) {
 		   return this;
@@ -42,12 +43,17 @@
 			}
 			else {
 				// Coordenadas de Geolocalizacion
+
 				var center 	= jQuery.googleHeatMaps.obtenerCoords(opts.latitud, opts.longitud);
 				jQuery.googleHeatMaps.gMap.setCenter(center, 16/*opts.factorZoom*/);
+				jQuery.googleHeatMaps.latitud = center.x;
+				jQuery.googleHeatMaps.longitud = center.y;
+
 			}
 			
 			jQuery.googleHeatMaps.gMap.addControl(new GMapTypeControl());
 			jQuery.googleHeatMaps.gMap.addControl(new GLargeMapControl());
+
 
 			GEvent.addListener(jQuery.googleHeatMaps.gMap, "zoomend", function() {
 				jQuery.googleHeatMaps.redibujar(opts);
@@ -76,27 +82,39 @@
 			zoom = Math.pow(2, zoom) / Math.pow(2, 16);
 			canvas.fillStyle = "rgba(250, 0, 0, 0.8)";  
 
-			/* data: [
-				{
-					x: 19.406145, 
-					y: -99.169807
-				},
-				{
-					x: 19.406145, 
-					y: -99.169807
-				}, 
-				{
-					x: 19.406145,
-					y: -99.169807
-				} 
-			]
-			$.each(data, function(clave, valor) {
-				alert(clave.x);
-			}) */
-			var y = jQuery.googleHeatMaps.gMap.getCenter().y - 19.406145;
+			/*var y = jQuery.googleHeatMaps.gMap.getCenter().y - 19.406145;
 			var x = jQuery.googleHeatMaps.gMap.getCenter().x - -99.169807;
 			var fac = 47000.0 / (1.0/zoom);			
-			canvas.fillRect ((opts.mapsWidth/2) + (-x*fac), (opts.mapsHeight/2) + (y*fac) , 10, 10);
+			canvas.fillRect ((opts.mapsWidth/2) + (-x*fac), (opts.mapsHeight/2) + (y*fac) , 10, 10);*/
+
+			a = new Array();
+			a[0] = new Array();
+			a[1] = new Array();
+			
+			a[0].push(19.40602);
+			a[1].push(-99.16990);
+			
+			a[0].push(19.40202);
+			a[1].push(-99.17090);
+			
+			a[0].push(19.40102);
+			a[1].push(-99.17290);
+				
+			for (var i = 0; i < a[0].length ; i++) { 
+								
+				var y = $.googleHeatMaps.longitud - a[0][i];
+				var x = $.googleHeatMaps.latitud - a[1][i];
+				
+				var fac = 47000.0 / (1.0/zoom);
+
+				canvas.fillRect ((opts.mapsWidth/2) + (-x*fac), (opts.mapsHeight/2) + (y*fac) , 10, 10);
+				
+			}
+			
+			
+			
+
+
 		},
 		clean: function (canvas) {
 			canvas.setTransform(1, 0, 0, 1, 0, 0);
