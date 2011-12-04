@@ -65,6 +65,9 @@
 			jQuery.googleHeatMaps.redibujar(opts);
 			// Controles de manejo
 			jQuery.googleHeatMaps.gMap.setUIToDefault();
+			
+			jQuery.googleHeatMaps.filtrardatos(opts.data,'23/11/2011','30/11/2011','tipo #a');
+			
 		},
 		obtenerCoords: function(latitud, longitud) {
 			return new GLatLng(latitud, longitud);
