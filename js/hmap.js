@@ -1,6 +1,6 @@
 (function($){
 
-
+	
 	
 	jQuery.fn.googleHeatMaps = function(options) {
 		if (!window.GBrowserIsCompatible || !GBrowserIsCompatible())  {
@@ -49,6 +49,8 @@
 				// Coordenadas de Geolocalizacion
 				var center 	= $.googleHeatMaps.obtenerCoords(opts.latitud, opts.longitud);
 				$.googleHeatMaps.gMap.setCenter(center, 16/*opts.factorZoom*/);
+				$.googleHeatMaps.latitud = center.x;
+				$.googleHeatMaps.longitud = center.y;
 			}
 			
 			
@@ -58,6 +60,10 @@
 
 			GEvent.addListener($.googleHeatMaps.gMap, "zoomend", function() {
 				$.googleHeatMaps.redibujar();
+			});
+			
+			GEvent.addListener($.googleHeatMaps.gMap, "move", function() {
+				// $.googleHeatMaps.redibujar();
 			});
 			
 			label = new ELabel($.googleHeatMaps.gMap.getCenter(), '<canvas id="carcanvas" width="550" height="450"><\/canvas>',null ,new GSize(-275, 225));
@@ -95,30 +101,31 @@
 
 			canvas.fillStyle = "rgba(250, 0, 0, 0.8)";  
 
-			/* data: [
-				{
-					x: 19.406145, 
-					y: -99.169807
-				},
-				{
-					x: 19.406145, 
-					y: -99.169807
-				}, 
-				{
-					x: 19.406145,
-					y: -99.169807
-				} 
-			]
-			$.each(data, function(clave, valor) {
-				alert(clave.x);
-			}) */
+			a = new Array();
+			a[0] = new Array();
+			a[1] = new Array();
 			
-			var y = $.googleHeatMaps.gMap.getCenter().y - 19.406145;
-			var x = $.googleHeatMaps.gMap.getCenter().x - -99.169807;
+			a[0].push(19.40602);
+			a[1].push(-99.16990);
 			
-			var fac = 47000.0 / (1.0/zoom);
+			a[0].push(19.40202);
+			a[1].push(-99.17090);
+			
+			a[0].push(19.40102);
+			a[1].push(-99.17290);
+				
+			for (var i = 0; i < a[0].length ; i++) { 
+								
+				var y = $.googleHeatMaps.longitud - a[0][i];
+				var x = $.googleHeatMaps.latitud - a[1][i];
+				
+				var fac = 47000.0 / (1.0/zoom);
 
-			canvas.fillRect (275 + (-x*fac), 225 + (y*fac) , 10, 10);
+				canvas.fillRect (275 + (-x*fac), 225 + (y*fac) , 10, 10);
+				
+			}
+			
+			
 			
 		},
 		clean: function (canvas) 
