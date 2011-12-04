@@ -70,7 +70,7 @@
 			*/
 			
 			
-			label = new ELabel(jQuery.googleHeatMaps.gMap.getCenter(), '<canvas id="carcanvas" width="' + opts.mapsWidth + '" height="' + opts.mapsHeight + '"><\/canvas>',null ,new GSize(-' + (opts.mapsWidth/2) + ', ' + (opts.mapsHeight/2) + '));
+			label = new heatmapLayer(jQuery.googleHeatMaps.gMap.getCenter(), '<canvas id="carcanvas" width="' + opts.mapsWidth + '" height="' + opts.mapsHeight + '"><\/canvas>' ,new GSize(-' + (opts.mapsWidth/2) + ', ' + (opts.mapsHeight/2) + '));
 			jQuery.googleHeatMaps.gMap.addOverlay(label);
 			canvas = document.getElementById("carcanvas").getContext('2d');
 			jQuery.googleHeatMaps.redibujar(opts);
@@ -159,7 +159,7 @@
 			a.push( new Array(19.40972, -99.16890)); */  
 			
 			
-			/* for (var i = 0; i < a.length ; i++) { 
+			/*for (var i = 0; i < a.length ; i++) { 
 								
 				canvas.fillStyle = "rgba(0, 200, 0, 0.8)";
 				var latlng  = new GLatLng(a[i][0], a[i][1],true);
@@ -169,24 +169,26 @@
 				canvas.fillRect (x, y , 10, 10);
 			}*/
 			
-			jQuery.googleHeatMaps.pinta(a, canvas);
+			jQuery.googleHeatMaps.pinta(a, canvas, opts);
 			
 			
 		},
-		pinta: function (a, canvas) 
+		pinta: function (a, canvas, opts) 
 		{
-			var pantalla = [];
-			for (var x=0; x<550; x++) {
+			
+			var zoom = jQuery.googleHeatMaps.gMap.getZoom();
+			zoom = Math.pow(2, zoom) / Math.pow(2, 16);
+
+			var escala = 2;
+			
+			var pantalla = [];			
+			for (var x=0; x<opts.mapsWidth/escala; x++) {
 				pantalla[x] = new Array();
-				for (var y=0; y<450; y++) {
+				for (var y=0; y<opts.mapsHeight/escala; y++) {
 					pantalla[x][y] = 0;
 				}
 			}
 			
-			var zoom = jQuery.googleHeatMaps.gMap.getZoom();
-			zoom = Math.pow(2, zoom) / Math.pow(2, 16);
-			canvas.fillStyle = "rgba(250, 0, 0, 0.8)"; 
-			var fac = 47000.0 / (1.0/zoom);
 			
 			for (var i = 0; i < a.length ; i++) {
 				var latlng  = new GLatLng(a[i][0], a[i][1],true);
@@ -194,24 +196,77 @@
 				var y = cor.y;
 				var x = cor.x;
 				// canvas.fillRect (x, y , 10, 10);
-				
-				console.log(x+" "+y);
-				
-				pantalla[parseInt(x)][parseInt(y)] = 1.0;
+				if (x/escala > 0 && x/escala < opts.mapsWidth) {
+					if (y/escala > 0 && y/escala < opts.mapsHeight) {
+						pantalla[parseInt(x/escala)][parseInt(y/escala)] = 0.1;
+					}
+				}
 				
 			}
 			
+			pantalla = jQuery.googleHeatMaps.desvaneceN(40, pantalla, opts.mapsWidth/escala, opts.mapsHeight/escala);
 			
-			
-			for (var x=0; x<550; x++) {
-				for (var y=0; y<450; y++) {
+			for (var x=0; x<opts.mapsWidth/escala; x++) {
+				for (var y=0; y<opts.mapsHeight/escala; y++) {
 					var value = pantalla[x][y];
 					canvas.fillStyle = "rgba(250, 0, 0, " + value + ")"; 
-					canvas.fillRect (x, y , 20, 20);
+					canvas.fillRect (x*escala, y*escala , escala, escala);
 				}
 			}
 		},
 		
+		
+		desvaneceN: function (n, pantalla, ancho, alto) {
+			for (var i=0; i<n; i++) {
+				pantalla = jQuery.googleHeatMaps.desvanece(pantalla, ancho, alto);	
+			}
+			pantalla = jQuery.googleHeatMaps.normaliza(pantalla, ancho, alto);	
+			
+			return pantalla;
+		},
+		
+		desvanece: function (pantalla, ancho, alto) {
+			pantalla2 = [];
+			for (var x=0; x<ancho; x++){
+				pantalla2[x] = new Array();
+				for (var y=0; y<alto; y++){
+					if (x == 0 || x == ancho-1) {
+						pantalla2[x][y] = 0;
+					} else if (y == 0 || y == alto-1)  {
+						pantalla2[x][y] = 0;
+					} else {
+						
+						pantalla2[x][y] = ( pantalla[x-0][y+1] + 
+											pantalla[x-0][y-0] +
+											pantalla[x-0][y-1] +
+											pantalla[x-1][y+1] +
+											pantalla[x-1][y-0] +
+											pantalla[x-1][y-1] +
+											pantalla[x+1][y+1] +
+											pantalla[x+1][y-0] +
+											pantalla[x+1][y-1] );
+					}
+				}
+			}	
+			return pantalla2;
+		},
+		normaliza: function(pantalla, ancho, alto) {
+			var max = 0;
+			var min = 1.0;
+			for (var x=1; x<ancho-1; x++){
+				for (var y=1; y<alto-1; y++){
+					max = Math.max(max, pantalla[x][y]);
+					min = Math.min(min, pantalla[x][y]);
+				}
+			}
+			
+			for (var x=1; x<ancho-1; x++){
+				for (y=1; y<alto-1; y++){
+					pantalla[x][y] = ((pantalla[x][y]-min) / (max-min)) * 1.0;
+				}
+			}
+			return pantalla;
+		},
 		clean: function (canvas) 
 		{
 			canvas.setTransform(1, 0, 0, 1, 0, 0);
@@ -294,114 +349,44 @@ TimeLineFilters =
     }
 }
 
-function ELabel(point, html, classname, pixelOffset, percentOpacity, overlap) {
-    // Mandatory parameters
-    this.point = point;
+function heatmapLayer(point, html, pixelOffset) {
+	this.point = point;
     this.html = html;
-    
-    // Optional parameters
-    this.classname = classname||"";
     this.pixelOffset = pixelOffset||new GSize(0,0);
-    if (percentOpacity) {
-      if(percentOpacity<0){percentOpacity=0;}
-      if(percentOpacity>100){percentOpacity=100;}
-    }        
-    this.percentOpacity = percentOpacity;
-    this.overlap=overlap||false;
-    this.hidden = false;
-  } 
-  
-  ELabel.prototype = new GOverlay();
+} 
+      
+heatmapLayer.prototype = new GOverlay();
 
-  ELabel.prototype.initialize = function(map) {
-    var div = document.createElement("div");
+// Crear el div que representa al canvas layer
+heatmapLayer.prototype.initialize = function(map) {
+	var div = document.createElement("div");
     div.style.position = "absolute";
-    div.innerHTML = '<div class="' + this.classname + '">' + this.html + '</div>' ;
+    div.innerHTML = '<div>' + this.html + '</div>' ;
     map.getPane(G_MAP_FLOAT_SHADOW_PANE).appendChild(div);
     this.map_ = map;
     this.div_ = div;
-    if (this.percentOpacity) {        
-      if(typeof(div.style.filter)=='string'){div.style.filter='alpha(opacity:'+this.percentOpacity+')';}
-      if(typeof(div.style.KHTMLOpacity)=='string'){div.style.KHTMLOpacity=this.percentOpacity/100;}
-      if(typeof(div.style.MozOpacity)=='string'){div.style.MozOpacity=this.percentOpacity/100;}
-      if(typeof(div.style.opacity)=='string'){div.style.opacity=this.percentOpacity/100;}
-    }
-    if (this.overlap) {
-      var z = GOverlay.getZIndex(this.point.lat());
-      this.div_.style.zIndex = z;
-    }
-    if (this.hidden) {
-      this.hide();
-    }
-  }
+}
 
-  ELabel.prototype.remove = function() {
-    this.div_.parentNode.removeChild(this.div_);
-  }
+// Elimina el div principal del panel del mapa
+heatmapLayer.prototype.remove = function() {
+	this.div_.parentNode.removeChild(this.div_);
+}
+// Copia los datos a un nueva capa
+heatmapLayer.prototype.copy = function() {
+	return new heatmapLayer(this.point, this.html, this.pixelOffset);
+}
 
-  ELabel.prototype.copy = function() {
-    return new ELabel(this.point, this.html, this.classname, this.pixelOffset, this.percentOpacity, this.overlap);
-  }
-
-  ELabel.prototype.redraw = function(force) {
-    var p = this.map_.fromLatLngToDivPixel(this.point);
+heatmapLayer.prototype.redraw = function(force) {
+	// Redibujar solamente si las coordenadas han cambiado
+	if (!force) return;
+	
+	// Calcular las coord del div a partir de las 2 esquinas del limite del rectangulo del canvas
+	var c1 = this.map_.fromLatLngToDivPixel(this.point);
+	var c2 = parseInt(this.div_.clientHeight);
+	
+	// La posicion del div esta basada en las coordenadas de limites del canvas
+	var p = this.map_.fromLatLngToDivPixel(this.point);
     var h = parseInt(this.div_.clientHeight);
     this.div_.style.left = (p.x + this.pixelOffset.width) + "px";
     this.div_.style.top = (p.y +this.pixelOffset.height - h) + "px";
-  }
-
-  ELabel.prototype.show = function() {
-    if (this.div_) {
-      this.div_.style.display="";
-      this.redraw();
-    }
-    this.hidden = false;
-  }
-  
-  ELabel.prototype.hide = function() {
-    if (this.div_) {
-      this.div_.style.display="none";
-    }
-    this.hidden = true;
-  }
-  
-  ELabel.prototype.isHidden = function() {
-    return this.hidden;
-  }
-  
-  ELabel.prototype.supportsHide = function() {
-    return true;
-  }
-
-  ELabel.prototype.setContents = function(html) {
-    this.html = html;
-    this.div_.innerHTML = '<div class="' + this.classname + '">' + this.html + '</div>' ;
-    this.redraw(true);
-  }
-  
-  ELabel.prototype.setPoint = function(point) {
-    this.point = point;
-    if (this.overlap) {
-      var z = GOverlay.getZIndex(this.point.lat());
-      this.div_.style.zIndex = z;
-    }
-    this.redraw(true);
-  }
-  
-  ELabel.prototype.setOpacity = function(percentOpacity) {
-    if (percentOpacity) {
-      if(percentOpacity<0){percentOpacity=0;}
-      if(percentOpacity>100){percentOpacity=100;}
-    }        
-    this.percentOpacity = percentOpacity;
-    if (this.percentOpacity) {        
-      if(typeof(this.div_.style.filter)=='string'){this.div_.style.filter='alpha(opacity:'+this.percentOpacity+')';}
-      if(typeof(this.div_.style.KHTMLOpacity)=='string'){this.div_.style.KHTMLOpacity=this.percentOpacity/100;}
-      if(typeof(this.div_.style.MozOpacity)=='string'){this.div_.style.MozOpacity=this.percentOpacity/100;}
-      if(typeof(this.div_.style.opacity)=='string'){this.div_.style.opacity=this.percentOpacity/100;}
-    }
-  }
-
-  ELabel.prototype.getPoint = function() {
-    return this.point;
-  }
+}
