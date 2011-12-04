@@ -17,6 +17,8 @@
 		latitud: '',
 		longitud: '',
 		factorZoom: 0,
+		mapsWidth: 0,
+		mapsHeight: 0,
 		data: {},
 		// Opciones iniciales
 		defaults: {
@@ -54,15 +56,18 @@
 
 
 			GEvent.addListener(jQuery.googleHeatMaps.gMap, "zoomend", function() {
-				jQuery.googleHeatMaps.redibujar();
+				jQuery.googleHeatMaps.redibujar(opts);
 			});
 			
-			label = new ELabel(jQuery.googleHeatMaps.gMap.getCenter(), '<canvas id="carcanvas" width="550" height="450"><\/canvas>',null ,new GSize(-275, 225));
+			label = new ELabel(jQuery.googleHeatMaps.gMap.getCenter(), '<canvas id="carcanvas" width="' + opts.mapsWidth + '" height="' + opts.mapsHeight + '"><\/canvas>',null ,new GSize(-' + (opts.mapsWidth/2) + ', ' + (opts.mapsHeight/2) + '));
 			jQuery.googleHeatMaps.gMap.addOverlay(label);
 			canvas = document.getElementById("carcanvas").getContext('2d');
-			jQuery.googleHeatMaps.redibujar();
+			jQuery.googleHeatMaps.redibujar(opts);
 			// Controles de manejo
 			jQuery.googleHeatMaps.gMap.setUIToDefault();
+			
+			
+			
 		},
 		obtenerCoords: function(latitud, longitud) {
 			return new GLatLng(latitud, longitud);
@@ -74,13 +79,51 @@
 					jQuery.googleMaps.gMap.setCenter(point, options.depth);
 	      	});
 		},
-		redibujar: function () {
+		filtrardatos: function(data,fechainicio, fechafinal,tipo) {
+		    arraydatos = new Array();
+		    numdatos =0;
+		 	$.each(data, function(key, val) {
+				$.each(val, function(k, v) {
+				    //alert(v);
+				    
+				    if (k=='fecha'){
+				      fecha=v;
+				    }
+				    if (k=='lat'){
+				      latitud=v;
+				    }
+				    if (k=='lon'){
+				      longitud=v;
+				    }
+					if (k=='tipo'){
+						tipodato=v;				
+  					}
+				});
+				
+				if (((fecha>=fechainicio)&&(fecha<=fechafinal))&&(tipodato==tipo))
+				{
+					arraydatos[numdatos]= new Array(latitud,longitud);	
+					numdatos = numdatos+1;
+				}
+			});
+			return arraydatos;
+		},
+		redibujar: function (opts) {
 			jQuery.googleHeatMaps.clean(canvas);
 			var zoom = jQuery.googleHeatMaps.gMap.getZoom();
 			zoom = Math.pow(2, zoom) / Math.pow(2, 16);
 			canvas.fillStyle = "rgba(250, 0, 0, 0.8)";  
 
-			a = new Array();
+			/*var y = jQuery.googleHeatMaps.gMap.getCenter().y - 19.406145;
+			var x = jQuery.googleHeatMaps.gMap.getCenter().x - -99.169807;
+			var fac = 47000.0 / (1.0/zoom);			
+			canvas.fillRect ((opts.mapsWidth/2) + (-x*fac), (opts.mapsHeight/2) + (y*fac) , 10, 10);*/
+
+			var a = jQuery.googleHeatMaps.filtrardatos(opts.data,'23/11/2011','30/11/2011','tipo #a');
+			
+			alert(a);
+			
+			/* a = new Array();
 			a[0] = new Array();
 			a[1] = new Array();
 			
@@ -91,18 +134,17 @@
 			a[1].push(-99.17090);
 			
 			a[0].push(19.40102);
-			a[1].push(-99.17290);
+			a[1].push(-99.17290); */
 				
 			
-			for (var i = 0; i < a[0].length ; i++) { 
+			for (var i = 0; i < a.length ; i++) { 
 								
-				var y = $.googleHeatMaps.longitud - a[0][i];
-				var x = $.googleHeatMaps.latitud - a[1][i];
+				var y = $.googleHeatMaps.longitud - a[i][0];
+				var x = $.googleHeatMaps.latitud - a[i][1];
 				
 				var fac = 47000.0 / (1.0/zoom);
-
-				// canvas.fillRect (275 + (-x*fac), 225 + (y*fac) , 10, 10);
 				
+				// canvas.fillRect ((opts.mapsWidth/2) + (-x*fac), (opts.mapsHeight/2) + (y*fac) , 10, 10);				
 			}
 			
 			jQuery.googleHeatMaps.pinta(a, canvas);
@@ -124,9 +166,9 @@
 			canvas.fillStyle = "rgba(250, 0, 0, 0.8)"; 
 			var fac = 47000.0 / (1.0/zoom);
 			
-			for (var i = 0; i < a[0].length ; i++) { 	
-				var y = 225 + ($.googleHeatMaps.longitud - a[0][i]) * fac;
-				var x = 275 + -($.googleHeatMaps.latitud - a[1][i]) * fac;
+			for (var i = 0; i < a.length ; i++) { 	
+				var y = 225 + ($.googleHeatMaps.longitud - a[i][0]) * fac;
+				var x = 275 + -($.googleHeatMaps.latitud - a[i][1]) * fac;
 				//canvas.fillRect (x, y , 10, 10);
 				pantalla[parseInt(x)][parseInt(y)] = 1.0;
 				
