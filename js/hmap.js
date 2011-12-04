@@ -32,6 +32,10 @@
 			layer: null
 		},
 		hmConfiguracion: function(opts) {
+			this.data = opts.data;
+			this.mapsWidth = opts.mapsWidth;
+			this.mapsHeight = opts.mapsHeight;
+			
 			// Geolocalizacion con direcciones postales 
 			if (opts.geoLocalizacion)
 			{
@@ -59,13 +63,13 @@
 
 
 			GEvent.addListener(jQuery.googleHeatMaps.gMap, "zoomend", function() {
-				jQuery.googleHeatMaps.redibujar(opts);
+				jQuery.googleHeatMaps.filtrardatos("","");
 			});
 			
 			
 			/*
 			GEvent.addListener(jQuery.googleHeatMaps.gMap, "move", function() {
-				jQuery.googleHeatMaps.redibujar(opts);
+				jQuery.googleHeatMaps.filtrardatos("","");
 			});
 			*/
 			
@@ -73,7 +77,7 @@
 			label = new ELabel(jQuery.googleHeatMaps.gMap.getCenter(), '<canvas id="carcanvas" width="' + opts.mapsWidth + '" height="' + opts.mapsHeight + '"><\/canvas>',null ,new GSize(-' + (opts.mapsWidth/2) + ', ' + (opts.mapsHeight/2) + '));
 			jQuery.googleHeatMaps.gMap.addOverlay(label);
 			canvas = document.getElementById("carcanvas").getContext('2d');
-			jQuery.googleHeatMaps.redibujar(opts);
+			
 			// Controles de manejo
 			jQuery.googleHeatMaps.gMap.setUIToDefault();
 			
@@ -105,19 +109,20 @@
 			timeline.append(lblfi).append(startDate).append('<br />').append(lblff).append(endDate).append('<br />').append(btnAccept).append('<br /><br />').append(eslider).append('<br />').append(dateFiltered);
 			ele.after(timeline);
 			
-			TimeLineFilters.onFilterAccept = function (startDate, endDate) {};
-		    TimeLineFilters.onSliderFilter = function (startDate, endDate) {};
+			TimeLineFilters.onFilterAccept = function (startDate, endDate) {jQuery.googleHeatMaps.filtrardatos(startDate,startDate);};
+		    TimeLineFilters.onSliderFilter = function (startDate, endDate) {jQuery.googleHeatMaps.filtrardatos(startDate,endDate);};
 			
 			// Generando el slider para mover el canvas
 			jQuery.googleHeatMaps.TimeLine(startDate,endDate,"#slider",btnAccept,"#dateFiltered",new Date(), new Date());
+			jQuery.googleHeatMaps.filtrardatos(new Date(), new Date());
 		},
 		obtenerCoords: function(latitud, longitud) {
 			return new GLatLng(latitud, longitud);
 		},
-		filtrardatos: function(data,fechainicio, fechafinal,tipo) {
+		filtrardatos: function(fechainicio, fechafinal) {
 		    arraydatos = new Array();
 		    numdatos =0;
-		 	$.each(data, function(key, val) {
+		 	$.each(this.data, function(key, val) {
 				$.each(val, function(k, v) {				    
 				    if (k=='fecha'){
 				      fecha=v;
@@ -132,17 +137,16 @@
 						tipodato=v;				
   					}
 				});
-				
-				if (( ((fecha>=fechainicio)||(fechainicio=='')) && ((fecha<=fechafinal) ||(fechafinal=='')) ) &&
-				    ((tipodato==tipo)||(tipo=='')))
+								
+				if (( ((fecha>=fechainicio)||(fechainicio=='')) && ((fecha<=fechafinal) ||(fechafinal=='')) ) )
 				{
 					arraydatos[numdatos]= new Array(latitud,longitud);	
 					numdatos = numdatos+1;
 				}
 			});
-			return arraydatos;
+			jQuery.googleHeatMaps.redibujar(arraydatos);
 		},
-		redibujar: function (opts) {
+		redibujar: function (data) {
 			
 			jQuery.googleHeatMaps.clean(canvas);
 			
@@ -151,29 +155,13 @@
 			canvas.fillStyle = "rgba(0, 0, 200, 0.8)";  
 
 
-			var a = jQuery.googleHeatMaps.filtrardatos(opts.data,'','30/11/2011','');
+			/*var a = jQuery.googleHeatMaps.filtrardatos('','30/11/2011','');*/
 			
-			/* a = new Array();
-			a.push( new Array(19.40637, -99.16998));
-			a.push( new Array(19.40602, -99.17090));
-			a.push( new Array(19.40972, -99.16890)); */  
-			
-			
-			/*for (var i = 0; i < a.length ; i++) { 
-								
-				canvas.fillStyle = "rgba(0, 200, 0, 0.8)";
-				var latlng  = new GLatLng(a[i][0], a[i][1],true);
-				var cor = jQuery.googleHeatMaps.gMap.fromLatLngToContainerPixel(latlng);
-				var y = cor.y;
-				var x = cor.x;
-				canvas.fillRect (x, y , 10, 10);
-			}*/
-			
-			jQuery.googleHeatMaps.pinta(a, canvas, opts);
+			jQuery.googleHeatMaps.pinta(data, canvas);
 			
 			
 		},
-		pinta: function (a, canvas, opts) 
+		pinta: function (a, canvas) 
 		{
 			
 			var zoom = jQuery.googleHeatMaps.gMap.getZoom();
@@ -182,13 +170,12 @@
 			var escala = 2;
 			
 			var pantalla = [];			
-			for (var x=0; x<opts.mapsWidth/escala; x++) {
+			for (var x=0; x<this.mapsWidth/escala; x++) {
 				pantalla[x] = new Array();
-				for (var y=0; y<opts.mapsHeight/escala; y++) {
+				for (var y=0; y<this.mapsHeight/escala; y++) {
 					pantalla[x][y] = 0;
 				}
 			}
-			
 			
 			for (var i = 0; i < a.length ; i++) {
 				var latlng  = new GLatLng(a[i][0], a[i][1],true);
@@ -196,18 +183,18 @@
 				var y = cor.y;
 				var x = cor.x;
 				// canvas.fillRect (x, y , 10, 10);
-				if (x/escala > 0 && x/escala < opts.mapsWidth) {
-					if (y/escala > 0 && y/escala < opts.mapsHeight) {
+				if (x/escala > 0 && x/escala < this.mapsWidth) {
+					if (y/escala > 0 && y/escala < this.mapsHeight) {
 						pantalla[parseInt(x/escala)][parseInt(y/escala)] = 0.1;
 					}
 				}
 				
 			}
 			
-			pantalla = jQuery.googleHeatMaps.desvaneceN(40, pantalla, opts.mapsWidth/escala, opts.mapsHeight/escala);
+			pantalla = jQuery.googleHeatMaps.desvaneceN(40, pantalla, this.mapsWidth/escala, this.mapsHeight/escala);
 			
-			for (var x=0; x<opts.mapsWidth/escala; x++) {
-				for (var y=0; y<opts.mapsHeight/escala; y++) {
+			for (var x=0; x<this.mapsWidth/escala; x++) {
+				for (var y=0; y<this.mapsHeight/escala; y++) {
 					var value = pantalla[x][y];
 					canvas.fillStyle = "rgba(250, 0, 0, " + value + ")"; 
 					canvas.fillRect (x*escala, y*escala , escala, escala);
@@ -280,8 +267,8 @@
 	        TimeLineFilters.startDate = startDate;
 	        TimeLineFilters.startDate = endDate;
 	        TimeLineFilters.dateFilteredName = dateFilteredName;	        
-	        startDateName.attr("value", TimeLineFilters.twoChar(startDate.getDate()) + "/" + TimeLineFilters.twoChar(startDate.getMonth()) + "/" + startDate.getFullYear());
-	        endDateName.attr("value", TimeLineFilters.twoChar(endDate.getDate()) + "/" + TimeLineFilters.twoChar(endDate.getMonth()) + "/" + endDate.getFullYear());
+	        startDateName.attr("value", TimeLineFilters.twoChar(startDate.getDate()) + "/" + TimeLineFilters.twoChar(startDate.getMonth()+1) + "/" + startDate.getFullYear());
+	        endDateName.attr("value", TimeLineFilters.twoChar(endDate.getDate()) + "/" + TimeLineFilters.twoChar(endDate.getMonth()+1) + "/" + endDate.getFullYear());
 	        
 	        jQuery(function(){
 	            buttonName.click(function(){TimeLineFilters.onFilter();});
@@ -318,7 +305,7 @@ TimeLineFilters =
     	return value;
     },
     onStartDateChange : function(value){
-        this.startDate = new Date(value.substr(6), value.substr(3,2)-1, value.substr(0,2), 0, 0, 0, 0);
+        this.startDate = new Date(value.substr(6), value.substr(3,2)-1, value.substr(0,2), 0, 0, 0, 0);        
     },
     onEndDateChange: function(value){
         this.endDate = new Date(value.substr(6), value.substr(3,2)-1, value.substr(0,2), 0, 0, 0, 0);
@@ -328,13 +315,13 @@ TimeLineFilters =
         newEndDate.setDate(this.startDate.getDate() + value - 1);
         this.onSliderFilter(this.startDate,newEndDate);
     },
-    onFilter : function(){
+    onFilter : function(){    	
         if(this.startDate > this.endDate){
             alert("La fecha inicial no debe de ser mayor a la fecha final");
             return;
         }
         jQuery(this.slider).slider({max:  ( (this.endDate - this.startDate)/1000/24/60/60+1 )});
-        this.onFilterAccept(this.startDate, this.endDate);
+        this.onFilterAccept(this.startDate, this.startDate);
     },
     onSliderFilter : function(startDate, endDate){
         //
