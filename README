@@ -1,0 +1,25 @@
+/*
+ * jQuery googleHeatMaps Plugin v1.0.0
+ * 
+ * DAL MEXICO - OPENDATAMX - DESARROLLANDO AMERICA LATINA
+ * Fecha: Dic. 3 2011 - Dic. 4 2011
+ * Descripcion:
+ * 		Plugin basado en jQuery para la visualizacion de eventos 
+ * 		ocurridos durante periodos de tiempo, utilizando datos 
+ * 		georeferenciados, la informacion se muestran en forma de mapas de calor, 
+ * 		luego son animados mediante una linea de tiempo utilizando rangos de fechas 
+ * 		en que fueron ocurriendo. 
+ * Codigo: https://github.com/jackfiallos/hMap
+ * Creator: Qbit Mexhico
+ * 		Mike Salinas: @cbssma
+ * 		Eric Ruiz: @zerugiran
+ * 		Erling Fiallos: @jackfiallos
+ * 		Ernesto Salas
+ * Pieza de codigo bajo Licencia MIT y GPL
+ * 		http://www.gnu.org/licenses/gpl.html
+ *   	http://www.opensource.org/licenses/mit-license.php
+ * 
+ */
+
+Para que funcione correctamente, esta version necesita ser ejecutada en un servidor localhost 
+o cambiando el key del api de los mapas de google desde el archivo index.html
