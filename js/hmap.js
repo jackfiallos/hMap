@@ -125,7 +125,7 @@
 			a.push( new Array(19.40972, -99.16890)); */  
 			
 			
-			for (var i = 0; i < a.length ; i++) { 
+			/* for (var i = 0; i < a.length ; i++) { 
 								
 				canvas.fillStyle = "rgba(0, 200, 0, 0.8)";
 				var latlng  = new GLatLng(a[i][0], a[i][1],true);
@@ -133,7 +133,7 @@
 				var y = cor.y;
 				var x = cor.x;
 				canvas.fillRect (x, y , 10, 10);
-			}
+			}*/
 			
 			jQuery.googleHeatMaps.pinta(a, canvas);
 			
@@ -154,7 +154,8 @@
 			canvas.fillStyle = "rgba(250, 0, 0, 0.8)"; 
 			var fac = 47000.0 / (1.0/zoom);
 			
-			for (var i = 0; i < a.length ; i++) { 	
+			for (var i = 0; i < a.length ; i++) {
+				var latlng  = new GLatLng(a[i][0], a[i][1],true);
 				var cor = jQuery.googleHeatMaps.gMap.fromLatLngToContainerPixel(latlng);
 				var y = cor.y;
 				var x = cor.x;
