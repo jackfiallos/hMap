@@ -2,36 +2,51 @@
 <html>
 <head>
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<link href="css/screen.css" rel="stylesheet" type="text/css" media="screen,projection" />   
 	<style type="text/css">
-		html { height: 100% }
- 		body { height: 100%; margin: 0; padding: 0 }
-		#map_canvas { height: 100% }
+  		html { height: 100% }
+  		body { height: 100%; margin: 0; padding: 0 }
+  		#map_canvas { height: 100% }
 	</style>
-	<!--[if IE]>
-    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=ABQIAAAAwWe7xC5drhMLwJMCd1Z2HRT2yXp_ZAY8_ufC3CFXhHIE1NvwkxRn22vyAtqvJm6E4gzLmuVCrtY-lQ&sensor=true"></script>
-	<script src="js/jquery-1.7.1.min.js"></script>
+    <script src="js/jquery-1.7.1.min.js"></script>
+	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAwWe7xC5drhMLwJMCd1Z2HRT2yXp_ZAY8_ufC3CFXhHIE1NvwkxRn22vyAtqvJm6E4gzLmuVCrtY-lQ" type="text/javascript"></script>
+	<script src="js/hmap.js"></script>
 </head>
 <body>
-	<div id="map_canvas" style="width:100%; height:100%"></div>
-	<script type="text/javascript">
-	/*<![CDATA[*/
-	jQuery(function($) {
-		var latlng = new google.maps.LatLng(19.419770792208634, -99.15680408477783);
-		var myOptions = {
-			zoom: 16,
-			center: latlng,
-			mapTypeId: google.maps.MapTypeId.ROADMAP
-		};
-		var map = new google.maps.Map(
-			document.getElementById("map_canvas"),
-			myOptions
-		);
-	});
-	/*]]>*/
-</script>
+<div id="map_canvas" style="width:100%; height:100%"></div>
+<script type="text/javascript"> 
+/*<![CDATA[*/
+jQuery(function($) {
+	$('#map_canvas').googleHeatMaps({
+    	latitud: 19.40602,
+        longitud: -99.16990,
+        //geoLocalizacion: 'Mexico City',
+        factorZoom: 16,
+        data: [
+			{
+				'lat'  : 19.40602,
+            	'lon'  : -99.16990,
+            	'desc' : 'descripcion #a',
+            	'fecha': '23/11/2011',
+            	'tipo' : 'tipo #a'
+            },
+            {
+				'lat'  : 19.40202,
+            	'lon'  : -99.16490,
+            	'desc' : 'descripcion #b',
+            	'fecha': '27/11/2011',
+            	'tipo' : 'tipo #b'
+            },
+            {
+				'lat'  : 19.40102,
+            	'lon'  : -99.17490,
+            	'desc' : 'descripcion #c',
+            	'fecha': '30/11/2011',
+            	'tipo' : 'tipo #c'
+            }
+		]
+    });
+});
+/*]]>*/
+</script> 
 </body>
 </html>
