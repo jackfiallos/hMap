@@ -48,11 +48,9 @@
 			// Controles de manejo
 			$.googleHeatMaps.gMap.setUIToDefault();
 			// Manipulando los datos
-			/*$.each(opts.data, function(key, val) {
-				$.each(val, function(k, v) {
-					alert(v);
-				});
-			});*/
+			
+			var n 	= $.googleHeatMaps.filtrardatos(opts.data, '23/11/2011', '29/11/2011','tipo #a');
+
 		},
 		obtenerCoords: function(latitud, longitud) {
 			return new GLatLng(latitud, longitud);
@@ -63,6 +61,35 @@
 				if (point)
 					$.googleMaps.gMap.setCenter(point, options.depth);
 	      	});
+		},
+		filtrardatos: function(data,fechainicio, fechafinal,tipo) {
+		    arraydatos = new Array();
+		    numdatos =0;
+		 	$.each(data, function(key, val) {
+				$.each(val, function(k, v) {
+				    //alert(v);
+				    
+				    if (k=='fecha'){
+				      fecha=v;
+				    }
+				    if (k=='lat'){
+				      latitud=v;
+				    }
+				    if (k=='lon'){
+				      longitud=v;
+				    }
+					if (k=='tipo'){
+						tipodato=v;				
+  					}
+				});
+				
+				if (((fecha>=fechainicio)&&(fecha<=fechafinal))&&(tipodato==tipo))
+				{
+					arraydatos[numdatos]= new Array(latitud,longitud);	
+					numdatos = numdatos+1;
+				}
+			});
+			return arraydatos;
 		}
 	}
 })(jQuery); 
